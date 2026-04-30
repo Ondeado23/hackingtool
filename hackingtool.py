@@ -37,7 +37,7 @@ def safe_prompt(message: str, default: str = "") -> str:
     """Safely get user input, handling EOFError in non-interactive environments."""
     try:
         return Prompt.ask(message, default=default)
-    except EOFError:
+    except (EOFError, KeyboardInterrupt):
         # Non-interactive environment — return default
         return default
 
@@ -46,7 +46,7 @@ def safe_confirm(message: str, default: bool = False) -> bool:
     """Safely get confirmation, handling EOFError in non-interactive environments."""
     try:
         return Confirm.ask(message, default=default)
-    except EOFError:
+    except (EOFError, KeyboardInterrupt):
         # Non-interactive environment — return default
         return default
 from constants import VERSION_DISPLAY, REPO_WEB_URL
@@ -537,7 +537,7 @@ def recommend_tools():
         rtable.add_row("99", "", "Back", "")
         console.print(rtable)
 
-        raw2 = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+        raw2 = safe_prompt("[bold cyan]>[/bold cyan]", default="").strip()
         if raw2 and raw2 != "99":
             try:
                 ridx = int(raw2)
@@ -550,7 +550,7 @@ def recommend_tools():
 def search_tools(query: str | None = None):
     """Search tools — accepts inline query or prompts for one."""
     if query is None:
-        query = Prompt.ask("[bold cyan]/ Search[/bold cyan]", default="").strip().lower()
+        query = safe_prompt("[bold cyan]/ Search[/bold cyan]", default="").strip().lower()
     else:
         query = query.lower()
     if not query:
@@ -613,9 +613,9 @@ def interact_menu():
     while True:
         try:
             build_menu()
-            raw = Prompt.ask(
-                "[bold magenta]╰─>[/bold magenta]", default=""
-            ).strip()
+        raw = safe_prompt(
+            "[bold magenta]╰─>[/bold magenta]", default=""
+        ).strip()
 
             if not raw:
                 continue
@@ -671,7 +671,7 @@ def interact_menu():
                         f"[red]Error while opening {title}[/red]\n{e}",
                         border_style="red",
                     ))
-                    Prompt.ask("[dim]Press Enter to return to main menu[/dim]", default="")
+                    safe_prompt("[dim]Press Enter to return to main menu[/dim]", default="")
             else:
                 console.print(f"[red]⚠  Choose 1–{len(all_tools)}, ? for help, or q to quit.[/red]")
                 safe_prompt("[dim]Press Enter to continue[/dim]", default="")
