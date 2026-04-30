@@ -345,7 +345,7 @@ def build_menu():
     )
 
 
-# ── Search ─────────────────────────────────────────────────────────────────────
+# ── Search ───────────────────────────────────────────────────────────────────���─
 
 def _collect_all_tools() -> list[tuple]:
     """Walk all collections and return (tool_instance, category_name) pairs."""
@@ -613,9 +613,9 @@ def interact_menu():
     while True:
         try:
             build_menu()
-        raw = safe_prompt(
-            "[bold magenta]╰─>[/bold magenta]", default=""
-        ).strip()
+            raw = safe_prompt(
+                "[bold magenta]╰─>[/bold magenta]", default=""
+            ).strip()
 
             if not raw:
                 continue
