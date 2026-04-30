@@ -29,6 +29,26 @@ from rich.rule import Rule
 from rich.columns import Columns
 
 from core import HackingToolsCollection, clear_screen, console
+
+
+# ── Safe input wrapper for non-interactive environments ──────────────────────────
+
+def safe_prompt(message: str, default: str = "") -> str:
+    """Safely get user input, handling EOFError in non-interactive environments."""
+    try:
+        return Prompt.ask(message, default=default)
+    except (EOFError, KeyboardInterrupt):
+        # Non-interactive environment — return default
+        return default
+
+
+def safe_confirm(message: str, default: bool = False) -> bool:
+    """Safely get confirmation, handling EOFError in non-interactive environments."""
+    try:
+        return Confirm.ask(message, default=default)
+    except (EOFError, KeyboardInterrupt):
+        # Non-interactive environment — return default
+        return default
 from constants import VERSION_DISPLAY, REPO_WEB_URL
 from config import get_tools_dir
 from tools.anonsurf import AnonSurfTools
@@ -142,7 +162,7 @@ def show_help():
         box=box.ROUNDED,
         padding=(0, 2),
     ))
-    Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+    safe_prompt("[dim]Press Enter to return[/dim]", default="")
 
 
 # ── Header: ASCII art + live system info ──────────────────────────────────────
@@ -325,7 +345,7 @@ def build_menu():
     )
 
 
-# ── Search ─────────────────────────────────────────────────────────────────────
+# ── Search ───────────────────────────────────────────────────────────────────���─
 
 def _collect_all_tools() -> list[tuple]:
     """Walk all collections and return (tool_instance, category_name) pairs."""
@@ -393,11 +413,11 @@ def filter_by_tag():
         border_style="magenta", box=box.ROUNDED, padding=(0, 2),
     ))
 
-    tag = Prompt.ask("[bold cyan]Enter tag[/bold cyan]", default="").strip().lower()
+    tag = safe_prompt("[bold cyan]Enter tag[/bold cyan]", default="").strip().lower()
     if not tag or tag not in tag_index:
         if tag:
             console.print(f"[dim]Tag '{tag}' not found.[/dim]")
-            Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+            safe_prompt("[dim]Press Enter to return[/dim]", default="")
         return
 
     matches = tag_index[tag]
@@ -417,7 +437,7 @@ def filter_by_tag():
     table.add_row("99", "", "Back to main menu", "")
     console.print(table)
 
-    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+    raw = safe_prompt("[bold cyan]>[/bold cyan]", default="").strip()
     if not raw or raw == "99":
         return
     try:
@@ -471,7 +491,7 @@ def recommend_tools():
     table.add_row("99", "Back to main menu")
     console.print(table)
 
-    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+    raw = safe_prompt("[bold cyan]>[/bold cyan]", default="").strip()
     if not raw or raw == "99":
         return
 
@@ -496,7 +516,7 @@ def recommend_tools():
 
         if not matches:
             console.print("[dim]No tools found for this task.[/dim]")
-            Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+            safe_prompt("[dim]Press Enter to return[/dim]", default="")
             return
 
         console.print(Panel(
@@ -517,7 +537,7 @@ def recommend_tools():
         rtable.add_row("99", "", "Back", "")
         console.print(rtable)
 
-        raw2 = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip()
+        raw2 = safe_prompt("[bold cyan]>[/bold cyan]", default="").strip()
         if raw2 and raw2 != "99":
             try:
                 ridx = int(raw2)
@@ -530,7 +550,7 @@ def recommend_tools():
 def search_tools(query: str | None = None):
     """Search tools — accepts inline query or prompts for one."""
     if query is None:
-        query = Prompt.ask("[bold cyan]/ Search[/bold cyan]", default="").strip().lower()
+        query = safe_prompt("[bold cyan]/ Search[/bold cyan]", default="").strip().lower()
     else:
         query = query.lower()
     if not query:
@@ -549,7 +569,7 @@ def search_tools(query: str | None = None):
 
     if not matches:
         console.print(f"[dim]No tools found matching '{query}'[/dim]")
-        Prompt.ask("[dim]Press Enter to return[/dim]", default="")
+        safe_prompt("[dim]Press Enter to return[/dim]", default="")
         return
 
     # Display results
@@ -569,7 +589,7 @@ def search_tools(query: str | None = None):
     table.add_row("99", "Back to main menu", "", "")
     console.print(table)
 
-    raw = Prompt.ask("[bold cyan]>[/bold cyan]", default="").strip().lower()
+    raw = safe_prompt("[bold cyan]>[/bold cyan]", default="").strip().lower()
     if not raw or raw == "99":
         return
 
@@ -593,7 +613,7 @@ def interact_menu():
     while True:
         try:
             build_menu()
-            raw = Prompt.ask(
+            raw = safe_prompt(
                 "[bold magenta]╰─>[/bold magenta]", default=""
             ).strip()
 
@@ -635,7 +655,7 @@ def interact_menu():
                 choice = int(raw_lower)
             except ValueError:
                 console.print("[red]⚠  Invalid input — enter a number, /query to search, or q to quit.[/red]")
-                Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                safe_prompt("[dim]Press Enter to continue[/dim]", default="")
                 continue
 
             if 1 <= choice <= len(all_tools):
@@ -651,10 +671,10 @@ def interact_menu():
                         f"[red]Error while opening {title}[/red]\n{e}",
                         border_style="red",
                     ))
-                    Prompt.ask("[dim]Press Enter to return to main menu[/dim]", default="")
+                    safe_prompt("[dim]Press Enter to return to main menu[/dim]", default="")
             else:
                 console.print(f"[red]⚠  Choose 1–{len(all_tools)}, ? for help, or q to quit.[/red]")
-                Prompt.ask("[dim]Press Enter to continue[/dim]", default="")
+                safe_prompt("[dim]Press Enter to continue[/dim]", default="")
 
         except KeyboardInterrupt:
             console.print("\n[bold red]Interrupted — exiting[/bold red]")
@@ -669,7 +689,7 @@ def main():
 
         if CURRENT_OS.system == "windows":
             console.print(Panel("[bold red]Please run this tool on Linux or macOS.[/bold red]"))
-            if Confirm.ask("Open guidance link in your browser?", default=True):
+            if safe_confirm("Open guidance link in your browser?", default=True):
                 webbrowser.open_new_tab(f"{REPO_WEB_URL}#windows")
             return
 
