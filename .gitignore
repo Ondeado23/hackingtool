@@ -183,3 +183,12 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,venv
+
+# Next.js
+.next/
+out/
+build/
+dist/
+node_modules/
+.env.local
+.env.*.local
