@@ -1,5 +1,5 @@
 # STATUS.md — Live Infrastructure (auto-updated)
-_Last updated: 2026-09-18T09:01:33.781Z_
+_Last updated: 2026-09-18T09:07:00.189Z_
 
 ## Container
 - **Name**: vk-hackingtool
@@ -12,9 +12,9 @@ _Last updated: 2026-09-18T09:01:33.781Z_
 ## App
 - **Name**: hackingtool
 - **Subdomain**: hackingtool.vibekit.bot
-- **DB Status**: stopped
+- **DB Status**: running
 - **Health Failures**: 0
-- **Last Healthy**: never
+- **Last Healthy**: 2026-09-18T09:06:01.107+00:00
 
 
 ## Host
