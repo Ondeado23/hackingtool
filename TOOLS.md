@@ -25,7 +25,7 @@
 - **Never paste a `https://…` link to a workspace file** — it 404s until the
   app is deployed. Show an image with `show-image`, hand over any other file
   with `send-file`; both render in chat instantly (§Media delivery).
-- **Generated media costs real money** (image ~1¢ to ~20¢ · music ~10¢ · video: exact prices per length from generate-video called without `duration`); video is the most
+- **Generated media costs real money** (image ~3¢ to ~17¢ · music ~8¢ · video: exact prices per length from generate-video called without `duration`); video is the most
   expensive thing you can do. One good asset, not a
   gallery. **NEVER retry an ambiguous result** — a timeout or unsaved result
   usually means the asset was already generated and BILLED; surface the
